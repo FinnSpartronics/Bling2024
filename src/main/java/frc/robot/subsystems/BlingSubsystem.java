@@ -6,70 +6,72 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.Constants.BlingModes;
 
 import static frc.robot.Constants.BlingConstants.*;
+
+import java.awt.Color;
 
 /**
 * Subsystem for Bling
  */
 public class BlingSubsystem extends SubsystemBase {
-  /**
-   * Bling Modes
-   */
-  public enum BlingModes {
-    OFF,
-    WARNING,
-    ERROR,
-
-    ALLIANCE,
-    ALLIANCE_PULSE,
-
-    RED,
-    ORANGE,
-    YELLOW,
-    LIME,
-    GREEN,
-    CYAN,
-    BLUE,
-    BLUE_OTHER,
-    SKY,
-    PURPLE,
-    PINK,
-    PINK_HOT,
-    WHITE,
-    BROWN,
-    GRAY,
-
-    // GRADIENT,
-    // PULSE,
-    // SNAKE,
-  }
-
   private final AddressableLED led;
   private final AddressableLEDBuffer ledBuffer;
 
-  private BlingModes mMode;
+  private Constants.BlingModes mMode;
+  private Color mPrimary;
+  private Color mSecondary;
   private int mFrame;
 
+  private boolean mSetSecondary = false;
+
   /**
-   * @return the current bling mode.
+   * Constructor for BlingSubsystem with default settings as set in Constants
    */
-  public BlingModes getMode() {
-    return mMode;
+  public BlingSubsystem() {
+    mMode = kDefaultBlingMode;
+    mPrimary = kDefaultBlingColor;
+    mSecondary = kDefaultBlingColorSecondary;
+
+    mFrame = 0;
+
+    led = new AddressableLED(kLedPort);
+    led.setLength(kLedLength);
+
+    ledBuffer = new AddressableLEDBuffer(kLedLength);
+
+    led.start();
+    shuffleboardFunc();
   }
 
-  public void shuffleboardFunc(){
-    var tab = Shuffleboard.getTab("blonk");
+  public void shuffleboardFunc() {
+    var tab = Shuffleboard.getTab("bling");
     tab.add("off", this.setModeCommand(BlingModes.OFF));
-    tab.add("err pulse", this.setModeCommand(BlingModes.ERROR));
-    tab.add("PURPLE", this.setModeCommand(BlingModes.PURPLE));
+    tab.add("solid", this.setModeCommand(BlingModes.SOLID));
+    tab.add("solid #2", this.setModeCommand(BlingModes.SOLID_SECONDARY));
+    tab.add("gradient", this.setModeCommand(BlingModes.GRADIENT));
+    tab.add("gradient reversed", this.setModeCommand(BlingModes.GRADIENT_REVERSED));
+    tab.add("pulse", this.setModeCommand(BlingModes.PULSE));
+    tab.add("pulse switch", this.setModeCommand(BlingModes.PULSE_SWITCH));
 
+    tab.add("warn", this.setModeCommand(BlingModes.WARNING));
+    tab.add("ERROR", this.setModeCommand(BlingModes.ERROR));
+
+    tab.add("set secondary", this.setSecondaryColorCommand());
+
+    tab.add("red", this.setColorCommand(Color.red));
+    tab.add("orange", this.setColorCommand(Color.orange));
+    tab.add("yellow", this.setColorCommand(Color.yellow));
+    tab.add("green", this.setColorCommand(Color.green));
+    tab.add("blue", this.setColorCommand(Color.blue));
+    tab.add("cyan", this.setColorCommand(Color.cyan));
+    tab.add("magenta", this.setColorCommand(Color.magenta));
+    tab.add("white", this.setColorCommand(Color.white));
   }
 
   /**
@@ -79,92 +81,26 @@ public class BlingSubsystem extends SubsystemBase {
   public void setMode(BlingModes newMode) {
     this.mMode = newMode;
   }
-
   public Command setModeCommand(BlingModes newMode) {
     return runOnce(() -> {
       setMode(newMode);
     });
   }
 
-  /**
-   * Constructor for BlingSubsystem with default settings as set in Constants
-   */
-  public BlingSubsystem() {
-    mMode = kDefaultBlingMode;
-    mFrame = 0;
-    led = new AddressableLED(kLedPort);
-
-    ledBuffer = new AddressableLEDBuffer(kLedLength);
-    for (var i = 0; i < kLedLength; i++) {
-      int r = (int) (255f-(255f/kLedLength)*i);
-      int g = (int) (255f/kLedLength)*i;
-      ledBuffer.setRGB(i,  r,  g, 50);
-    }
-    led.setLength(kLedLength);
-
-    led.start();
-    shuffleboardFunc();
+  public void setColor(Color newColor) {
+    if (mSetSecondary) this.mSecondary = newColor;
+    else this.mPrimary = newColor;
+    mSetSecondary = false;
   }
-
-  /**
-   * Constructor for BlingSubsystem with default port and non-default starting mode
-   * @param startMode Starting mode for the bling
-   */
-  public BlingSubsystem(BlingModes startMode) {
-    mMode = startMode;
-    mFrame = 0;
-    led = new AddressableLED(kLedPort);
-
-    ledBuffer = new AddressableLEDBuffer(kLedLength);
-    for (var i = 0; i < kLedLength; i++) {
-      int r = (int) (255f-(255f/kLedLength)*i);
-      int g = (int) (255f/kLedLength)*i;
-      ledBuffer.setRGB(i,  r,  g, 50);
-    }
-    led.setLength(kLedLength);
-
-    led.start();
+  public Command setColorCommand(Color newColor) {
+    return runOnce(() -> {
+      setColor(newColor);
+    });
   }
-
-  /**
-   * Constructor for BlingSubsystem with default port and non-default starting mode
-   * @param startMode Starting mode for the bling
-   * @param port Port for bling light strip
-   */
-  public BlingSubsystem(BlingModes startMode, int port) {
-    mMode = startMode;
-    mFrame = 0;
-    led = new AddressableLED(port);
-
-    ledBuffer = new AddressableLEDBuffer(kLedLength);
-    for (var i = 0; i < kLedLength; i++) {
-      int r = (int) (255f-(255f/kLedLength)*i);
-      int g = (int) (255f/kLedLength)*i;
-      ledBuffer.setRGB(i,  r,  g, 50);
-    }
-    led.setLength(kLedLength);
-
-    led.start();
-  }
-
-  /**
-   * Constructor for BlingSubsystem with default port and non-default starting mode
-   * @param port Port for bling light strip
-   */
-  public BlingSubsystem(int port) {
-    mMode = kDefaultBlingMode;
-    mFrame = 0;
-    led = new AddressableLED(port);
-
-    ledBuffer = new AddressableLEDBuffer(kLedLength);
-    for (var i = 0; i < kLedLength; i++) {
-      int r = (int) (255f-(255f/kLedLength)*i);
-      int g = (int) (255f/kLedLength)*i;
-      ledBuffer.setRGB(i,  r,  g, 50);
-    }
-    led.setLength(kLedLength);
-
-    led.start();
+  public Command setSecondaryColorCommand() {
+    return runOnce(() -> {
+      mSetSecondary = true;
+    });
   }
 
   @Override
@@ -177,77 +113,54 @@ public class BlingSubsystem extends SubsystemBase {
    * Updates the LEDS.
    */
   public void update() {
-    System.out.println("curr mode" + mMode.name());
+    System.out.println("Bling - " + mMode + ", " + mPrimary + ", " + mSecondary);
     switch (mMode) {
-      case OFF: setAllLeds(0,0,0); break;
-      case WARNING: alert(255,0,0); break;
-      case ERROR: alert(255,225,0); break;
-
-      case ALLIANCE: {
-        if (DriverStation.getAlliance().get() == Alliance.Red) setAllLeds(232, 72, 72);
-        else if (DriverStation.getAlliance().get() == Alliance.Blue) setAllLeds(46, 102, 232);
-        break;
+      case OFF -> setAllLeds(0, 0, 0);
+      case SOLID -> setAllLeds(mPrimary.getRed(), mPrimary.getGreen(), mPrimary.getBlue());
+      case SOLID_SECONDARY -> setAllLeds(mSecondary.getRed(), mSecondary.getGreen(), mSecondary.getBlue());
+      case GRADIENT -> {
+        for (int i = 0; i < kLedLength; i++) {
+          setPixel(i, mix(mPrimary, mSecondary, (float) (i) / kLedLength));
+        }
+        led.setData(ledBuffer);
       }
-      case ALLIANCE_PULSE: {
-        if (DriverStation.getAlliance().get() == Alliance.Red) pulse(232, 72, 72);
-        else if (DriverStation.getAlliance().get() == Alliance.Blue) pulse(46, 102, 232);
-        break;
+      case GRADIENT_REVERSED -> {
+        for (int i = 0; i < kLedLength; i++) {
+          setPixel(i, mix(mSecondary, mPrimary, (float) (i) / kLedLength));
+        }
       }
-
-      case RED: setAllLeds(255,255,0); break;
-      case ORANGE: setAllLeds(255,180,0); break;
-      case YELLOW: setAllLeds(255,225,0); break;
-      case LIME: setAllLeds(0,255,0); break;
-      case GREEN: setAllLeds(82, 199, 107); break;
-      case CYAN: setAllLeds(24, 175, 217); break;
-      case BLUE: setAllLeds(0, 0, 255); break;
-      case BLUE_OTHER: setAllLeds(46, 102, 232); break;
-      case SKY: pulse(66, 192, 255); break;
-      case PURPLE: setAllLeds(195, 0, 255); break;
-      case PINK: setAllLeds(255, 110, 231); break;
-      case PINK_HOT: setAllLeds(255, 0, 213); break;
-      case WHITE: setAllLeds(255,255,255); break;
-      case BROWN: setAllLeds(181, 140, 69); break;
-      case GRAY: setAllLeds(125,125,125); break;
+      case PULSE ->
+        setAllLeds(mix(mPrimary, Color.black, Math.abs((float) mFrame % kPulseLength / kPulseLength - .5f) * 2f));
+      case PULSE_SWITCH ->
+        setAllLeds(mix(mPrimary, mSecondary, Math.abs((float) mFrame % kPulseLength / kPulseLength - .5f) * 2f));
+      case AROUND -> {
+        for (int i = 0; i < kLedLength; i++) {
+          if (3 <= Math.abs(i - (mFrame*kAroundSpeedMultiplier % kLedLength))) 
+          setPixel(i, mix(mPrimary, Color.black, 3f/Math.abs(i - (mFrame*kAroundSpeedMultiplier % kLedLength)+.1)));
+          else setPixel(i, Color.black);
+        }
+      }
+      case ERROR ->
+        setAllLeds(mix(Color.red, Color.pink, Math.abs((float) mFrame % kAlertLength / kAlertLength - .5f) * 2f));
+      case WARNING ->
+        setAllLeds(mix(Color.yellow, Color.orange, Math.abs((float) mFrame % kAlertLength / kAlertLength - .5f) * 2f));
     }
+
+    led.setData(ledBuffer);
   }
 
-  /**
-   * Fades in, flashes out.
-   * @param r The red value of the color
-   * @param g The green value of the color
-   * @param b The blue value of the color
-   */
-  private void alert(int r, int g, int b) {
-    float percentage = (mFrame % (float) (kAlertLength)) / (float) kAlertLength;
-    setAllLeds((int) (r*percentage*kBrightness), (int) (g*percentage*kBrightness), (int) (b*percentage*kBrightness));
-  }
-
-  /**
-   * Fades in, flashes out.
-   * @param rgb An array of three integers for Red, Green, Blue
-   */
-  private void alert(int[] rgb) {
-    alert(rgb[0],rgb[1],rgb[2]);
-  }
-
-  /**
-   * Pulses the LEDS on a certain color.
-   * @param r The red value of the color
-   * @param g The green value of the color
-   * @param b The blue value of the color
-   */
-  private void pulse(int r, int g, int b) {
-    float percentage = (float) (Math.sin(mFrame / (float) kPulseLength)+1)/2;
-    setAllLeds((int) (r*percentage*kBrightness), (int) (g*percentage*kBrightness), (int) (b*percentage*kBrightness));
-  }
-
-  /**
-   * Pulses the LEDS on a certain color.
-   * @param rgb An array of three integers for Red, Green, Blue
-   */
-  private void pulse(int[] rgb) {
-    pulse(rgb[0],rgb[1],rgb[2]);
+  /**from wwwjava2s.com
+  * Mixes two colours.
+  *
+  * @param a       Base colour.
+  * @param b       Colour to mix in.
+  * @param percent Percentage of the old colour to keep around.
+  * @return the mixed Color
+  */
+   public static Color mix(Color a, Color b, double percent) {
+    return new Color((int) (a.getRed() * percent + b.getRed() * (1.0 - percent)),
+      (int) (a.getGreen() * percent + b.getGreen() * (1.0 - percent)),
+      (int) (a.getBlue() * percent + b.getBlue() * (1.0 - percent)));
   }
 
   /**
@@ -258,9 +171,36 @@ public class BlingSubsystem extends SubsystemBase {
    */
   private void setAllLeds(int r, int g, int b) {
     for (int i = 0; i < kLedLength; i++) {
-      ledBuffer.setRGB(i, (int) (r*kBrightness), (int) (g*kBrightness), (int) (b*kBrightness));
+      setPixel(i, r, g, b);
     }
-    led.setData(ledBuffer);
+  }
+
+  /**
+   * Sets the color of all the LEDS in the String.
+   * @param c Color to set
+   */
+  private void setAllLeds(Color c) {
+    setAllLeds(c.getRed(), c.getGreen(), c.getBlue());
+  }
+
+  /**
+   * Sets the color of a single pixel
+   * @param index Index of the pixel
+   * @param c Color to set
+   */
+  private void setPixel(int index, Color c) {
+    ledBuffer.setRGB(index, (int) (c.getRed()*kBrightness), (int) (c.getGreen()*kBrightness), (int) (c.getBlue()*kBrightness));
+  }
+
+  /**
+   * Sets the color of a single pixel
+   * @param index Index of the pixel
+   * @param r Red value of the pixel
+   * @param g Green value of the pixel
+   * @param b Blue value of the pixel
+   */
+  private void setPixel(int index, int r, int g, int b) {
+    ledBuffer.setRGB(index, (int) (r*kBrightness), (int) (g*kBrightness), (int) (b*kBrightness));
   }
 
   @Override

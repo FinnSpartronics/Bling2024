@@ -4,7 +4,9 @@
 
 package frc.robot;
 
-import frc.robot.subsystems.BlingSubsystem.BlingModes;
+import java.awt.*;
+
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -21,10 +23,32 @@ public final class Constants {
   public static class BlingConstants {
     public static final int kLedPort = 0; // Port that light strip is on
     public static final int kLedLength = 150; // Length of light strip
-    public static final int kAlertLength = 20; // Pulse Length in Frames
-    public static final int kPulseLength = 40; // Pulse Length in Frames
-    public static final float kBrightness = 0.6f; // Percentage
-    public static final BlingModes kDefaultBlingMode = BlingModes.GREEN;
+    public static final int kAlertLength = 60; // Pulse Length in Frames
+    public static final int kPulseLength = 200; // Pulse Length in Frames
+    public static final float kAroundSpeedMultiplier = .2f; // Around speed multiplier
+    public static final float kBrightness = 1f; // Percentage
+    public static final BlingModes kDefaultBlingMode = BlingModes.AROUND;
+    public static final Color kDefaultBlingColor = Color.yellow;
+    public static final Color kDefaultBlingColorSecondary = Color.blue;
   }
+  public enum BlingModes {
+    OFF,
+    SOLID,
+    SOLID_SECONDARY,
+    GRADIENT,
+    GRADIENT_REVERSED,
+    PULSE,
+    PULSE_SWITCH,
+    AROUND,
 
+    /*
+    ALLIANCE_SOLID
+    ALLIANCE_PULSE
+    ALLIANCE_PULSE_SWITCH
+    ALLIANCE_AROUND
+    */
+
+    WARNING,
+    ERROR
+  }
 }
