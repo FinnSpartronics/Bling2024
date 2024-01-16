@@ -135,8 +135,8 @@ public class BlingSubsystem extends SubsystemBase {
         setAllLeds(mix(mPrimary, mSecondary, Math.abs((float) mFrame % kPulseLength / kPulseLength - .5f) * 2f));
       case AROUND -> {
         for (int i = 0; i < kLedLength; i++) {
-          if (3 <= Math.abs(i - (mFrame*kAroundSpeedMultiplier % kLedLength))) 
-          setPixel(i, mix(mPrimary, Color.black, 3f/Math.abs(i - (mFrame*kAroundSpeedMultiplier % kLedLength)+.1)));
+          if (3 >= Math.abs(i - (mFrame*kAroundSpeedMultiplier % kLedLength))) 
+          setPixel(i, mix(mPrimary, Color.black, Math.abs(i - (mFrame*kAroundSpeedMultiplier % kLedLength))));
           else setPixel(i, Color.black);
         }
       }

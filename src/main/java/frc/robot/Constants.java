@@ -26,9 +26,9 @@ public final class Constants {
     public static final int kAlertLength = 60; // Pulse Length in Frames
     public static final int kPulseLength = 200; // Pulse Length in Frames
     public static final float kAroundSpeedMultiplier = .2f; // Around speed multiplier
-    public static final float kBrightness = 1f; // Percentage
-    public static final BlingModes kDefaultBlingMode = BlingModes.AROUND;
-    public static final Color kDefaultBlingColor = Color.yellow;
+    public static final float kBrightness = .5f; // Percentage
+    public static final BlingModes kDefaultBlingMode = BlingModes.PULSE;
+    public static final Color kDefaultBlingColor = Color.red;
     public static final Color kDefaultBlingColorSecondary = Color.blue;
   }
   public enum BlingModes {
