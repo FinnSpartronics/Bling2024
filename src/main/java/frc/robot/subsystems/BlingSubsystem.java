@@ -17,7 +17,7 @@ import static frc.robot.Constants.BlingConstants.*;
 import java.awt.Color;
 
 /**
-* Subsystem for Bling
+ * Subsystem for Bling
  */
 public class BlingSubsystem extends SubsystemBase {
   private final AddressableLED led;
@@ -58,6 +58,8 @@ public class BlingSubsystem extends SubsystemBase {
     tab.add("gradient reversed", this.setModeCommand(BlingModes.GRADIENT_REVERSED));
     tab.add("pulse", this.setModeCommand(BlingModes.PULSE));
     tab.add("pulse switch", this.setModeCommand(BlingModes.PULSE_SWITCH));
+    tab.add("around", this.setModeCommand(BlingModes.AROUND));
+    tab.add("around w/ #2 bg", this.setModeCommand(BlingModes.AROUND_SECONDARY_BG));
 
     tab.add("warn", this.setModeCommand(BlingModes.WARNING));
     tab.add("ERROR", this.setModeCommand(BlingModes.ERROR));
@@ -135,9 +137,16 @@ public class BlingSubsystem extends SubsystemBase {
         setAllLeds(mix(mPrimary, mSecondary, Math.abs((float) mFrame % kPulseLength / kPulseLength - .5f) * 2f));
       case AROUND -> {
         for (int i = 0; i < kLedLength; i++) {
-          if (3 >= Math.abs(i - (mFrame*kAroundSpeedMultiplier % kLedLength))) 
-          setPixel(i, mix(mPrimary, Color.black, Math.abs(i - (mFrame*kAroundSpeedMultiplier % kLedLength))));
+          if (kAroundStripLength >= Math.abs(i - (mFrame*kAroundSpeedMultiplier % kLedLength))) 
+            setPixel(i, mix(Color.black, mPrimary, Math.abs(i - (mFrame*kAroundSpeedMultiplier % kLedLength))/kAroundStripLength));
           else setPixel(i, Color.black);
+        }
+      }
+      case AROUND_SECONDARY_BG -> {
+        for (int i = 0; i < kLedLength; i++) {
+          if (kAroundStripLength >= Math.abs(i - (mFrame*kAroundSpeedMultiplier % kLedLength))) 
+            setPixel(i, mix(mSecondary, mPrimary, Math.abs(i - (mFrame*kAroundSpeedMultiplier % kLedLength))/kAroundStripLength));
+          else setPixel(i, mSecondary);
         }
       }
       case ERROR ->
@@ -158,9 +167,13 @@ public class BlingSubsystem extends SubsystemBase {
   * @return the mixed Color
   */
    public static Color mix(Color a, Color b, double percent) {
-    return new Color((int) (a.getRed() * percent + b.getRed() * (1.0 - percent)),
-      (int) (a.getGreen() * percent + b.getGreen() * (1.0 - percent)),
-      (int) (a.getBlue() * percent + b.getBlue() * (1.0 - percent)));
+    return new Color((int) (mixNumsForColors(a.getRed(), b.getRed(), percent, 0f, 255f)),
+                     (int) (mixNumsForColors(a.getGreen(), b.getGreen(), percent, 0f, 255f)),
+                     (int) (mixNumsForColors(a.getBlue(), b.getBlue(), percent, 0f, 255f)));
+  }
+
+  private static float mixNumsForColors(int a, int b, double percent, float minV, float maxV) {
+    return (float) (Math.min(Math.max(a * percent + b * (1.0 - percent),minV),maxV));
   }
 
   /**

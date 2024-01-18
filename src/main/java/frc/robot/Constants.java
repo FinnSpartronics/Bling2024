@@ -25,10 +25,11 @@ public final class Constants {
     public static final int kLedLength = 150; // Length of light strip
     public static final int kAlertLength = 60; // Pulse Length in Frames
     public static final int kPulseLength = 200; // Pulse Length in Frames
-    public static final float kAroundSpeedMultiplier = .2f; // Around speed multiplier
-    public static final float kBrightness = .5f; // Percentage
-    public static final BlingModes kDefaultBlingMode = BlingModes.PULSE;
-    public static final Color kDefaultBlingColor = Color.red;
+    public static final float kAroundSpeedMultiplier = .1f; // Around speed multiplier
+    public static final float kAroundStripLength = 15f; // Around speed multiplier
+    public static final float kBrightness = 1f; // Percentage
+    public static final BlingModes kDefaultBlingMode = BlingModes.AROUND_SECONDARY_BG;
+    public static final Color kDefaultBlingColor = Color.yellow;
     public static final Color kDefaultBlingColorSecondary = Color.blue;
   }
   public enum BlingModes {
@@ -40,6 +41,7 @@ public final class Constants {
     PULSE,
     PULSE_SWITCH,
     AROUND,
+    AROUND_SECONDARY_BG,
 
     /*
     ALLIANCE_SOLID
