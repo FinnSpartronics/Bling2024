@@ -4,9 +4,7 @@
 
 package frc.robot;
 
-import java.awt.*;
-
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.util.Color;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -25,12 +23,12 @@ public final class Constants {
     public static final int kLedLength = 150; // Length of light strip
     public static final int kAlertLength = 60; // Pulse Length in Frames
     public static final int kPulseLength = 200; // Pulse Length in Frames
-    public static final float kAroundSpeedMultiplier = .1f; // Around speed multiplier
-    public static final float kAroundStripLength = 15f; // Around speed multiplier
-    public static final float kBrightness = 1f; // Percentage
+    public static final double kAroundSpeedMultiplier = .2; // Around speed multiplier
+    public static final double kAroundStripLength = 15; // Around speed multiplier
+    public static final double kBrightness = 1; // Percentage
     public static final BlingModes kDefaultBlingMode = BlingModes.AROUND_SECONDARY_BG;
-    public static final Color kDefaultBlingColor = Color.yellow;
-    public static final Color kDefaultBlingColorSecondary = Color.blue;
+    public static final Color kDefaultBlingColor = Color.kGold;
+    public static final Color kDefaultBlingColorSecondary = Color.kRoyalBlue;
   }
   public enum BlingModes {
     OFF,
@@ -42,14 +40,6 @@ public final class Constants {
     PULSE_SWITCH,
     AROUND,
     AROUND_SECONDARY_BG,
-
-    /*
-    ALLIANCE_SOLID
-    ALLIANCE_PULSE
-    ALLIANCE_PULSE_SWITCH
-    ALLIANCE_AROUND
-    */
-
     WARNING,
     ERROR
   }

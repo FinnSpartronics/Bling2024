@@ -6,10 +6,6 @@ Modes:
     PULSE // Pulses primary color and off
     PULSE_SWITCH - Pulse between primary color and secondary color
     AROUND - Lights up one pixel to primary color at a time around the light strip to the primary color
-    ALLIANCE_SOLID - Sets color to alliance
-    ALLIANCE_PULSE - Alliance color pulses on and off
-    ALLIANCE_PULSE_SWITCH - Alliance color pulses on and 
-    ALLIANCE_AROUND - Lights up one pixel around the light strip to the alliance color
 
     OFF - No light
     WARNING - Flashes yellow and orange for warning
@@ -17,4 +13,4 @@ Modes:
 
 Colors: All default java colors
 
-Changable brightness
+Changeable brightness
